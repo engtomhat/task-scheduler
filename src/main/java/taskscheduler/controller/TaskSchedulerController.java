@@ -1,5 +1,6 @@
 package taskscheduler.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Queue;
 
@@ -8,11 +9,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import taskscheduler.exception.ResourceNotFoundException;
 import taskscheduler.model.Consumer;
+import taskscheduler.model.Schedule;
 import taskscheduler.model.Task;
 import taskscheduler.service.TaskSchedulerPlanner;
 import taskscheduler.service.TaskSchedulerStore;
@@ -31,7 +34,7 @@ public class TaskSchedulerController {
 	public void setPlanner(TaskSchedulerPlanner planner) {
 		this.planner = planner;
 	}
-	
+
 	@RequestMapping(path = "/task/{taskId}", method = RequestMethod.GET)
 	public Task getTask(@PathVariable String taskId) {
 		Task task = store.getTask(taskId);
@@ -43,7 +46,7 @@ public class TaskSchedulerController {
 	public Task submitTask(@RequestBody Task task) {
 		return store.submitTask(task);
 	}
-	
+
 	@RequestMapping(path = "/tasks", method = RequestMethod.GET)
 	public Queue<Task> getTasks() {
 		return store.getTasks();
@@ -65,21 +68,28 @@ public class TaskSchedulerController {
 		// Find tasks
 		return consumer.getAssignedTasks();
 	}
-	
+
 	@RequestMapping(path = "/consumers", method = RequestMethod.GET)
 	public Queue<Consumer> getConsumers() {
 		return store.getConsumers();
 	}
 
 	@RequestMapping(path = "/plan", method = RequestMethod.GET)
-	public Queue<Consumer> getPlan() {
-		if (!planner.isPlanFound()) {
-			throw new ResourceNotFoundException("Not enough consumers to schedule tasks");
+	public Schedule getPlan(@RequestParam(name = "startTime", required = false) LocalDateTime startTime) {
+		Schedule response = null;
+		if (startTime == null) {
+			if (!planner.isPlanFound()) {
+				throw new ResourceNotFoundException("Not enough consumers to schedule tasks");
+			}
+			response = planner.getSchedule();
+		} else {
+			// Recalculate plan based on startTime
+			response = planner.findPlan(store, startTime);
 		}
-		return store.getConsumers();
+		return response;
 	}
-	
-	@RequestMapping(path = "/reset", method = RequestMethod.GET)
+
+	@RequestMapping(path = "/reset", method = RequestMethod.DELETE)
 	public void reset() {
 		store.clear();
 	}

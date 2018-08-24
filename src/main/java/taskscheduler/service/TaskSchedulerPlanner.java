@@ -7,11 +7,14 @@ import java.util.Observer;
 import java.util.Queue;
 
 import taskscheduler.model.Consumer;
+import taskscheduler.model.Schedule;
+import taskscheduler.model.Schedule.ScheduleBuilder;
 import taskscheduler.model.Task;
 
 public class TaskSchedulerPlanner implements Observer {
-	
-	boolean planFound;
+
+	private boolean planFound;
+	private Schedule schedule;
 
 	public boolean isPlanFound() {
 		return planFound;
@@ -21,11 +24,18 @@ public class TaskSchedulerPlanner implements Observer {
 		this.planFound = planFound;
 	}
 
+	public Schedule getSchedule() {
+		return schedule;
+	}
+
+	public void setSchedule(Schedule schedule) {
+		this.schedule = schedule;
+	}
+
 	@Override
 	public void update(Observable o, Object arg) {
 		TaskSchedulerStore store = (TaskSchedulerStore) o;
-		store.clearConsumerTasks();
-		findPlan(store);
+		setSchedule(findPlan(store, LocalDateTime.now()));
 	}
 
 	/**
@@ -33,14 +43,16 @@ public class TaskSchedulerPlanner implements Observer {
 	 * 
 	 * @param store Task scheduler store carrying the queues of tasks and consumers
 	 */
-	private void findPlan(TaskSchedulerStore store) {
+	public Schedule findPlan(TaskSchedulerStore store, LocalDateTime startTime) {
+		ScheduleBuilder scheduleBuilder = new Schedule.ScheduleBuilder().startsAt(startTime);
+		store.clearConsumerTasks();
 		Queue<Consumer> consumers = store.getConsumers();
 		if (!consumers.isEmpty()) {
 			Queue<Task> tasks = store.getTasks();
 			Consumer nextConsumer = null;
 			LocalDateTime stepStartTime = null;
 			LocalDateTime stepFinishTime = null;
-			LocalDateTime start = LocalDateTime.now();
+			LocalDateTime start = startTime;
 			int tasksProcessed = 0;
 			for (Task nextTask : tasks) {
 				nextConsumer = consumers.poll();
@@ -59,9 +71,11 @@ public class TaskSchedulerPlanner implements Observer {
 			setPlanFound(tasksProcessed > 0 && tasksProcessed == tasks.size());
 			if (!isPlanFound()) {
 				store.clearConsumerTasks();
+			} else {
+				scheduleBuilder.withConsumers(consumers);
 			}
-
 		}
+		return scheduleBuilder.build();
 	}
 
 }
