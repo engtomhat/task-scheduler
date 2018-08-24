@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Queue;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -75,18 +76,18 @@ public class TaskSchedulerController {
 	}
 
 	@RequestMapping(path = "/plan", method = RequestMethod.GET)
-	public Schedule getPlan(@RequestParam(name = "startTime", required = false) LocalDateTime startTime) {
-		Schedule response = null;
-		if (startTime == null) {
-			if (!planner.isPlanFound()) {
-				throw new ResourceNotFoundException("Not enough consumers to schedule tasks");
-			}
-			response = planner.getSchedule();
-		} else {
+	public Schedule getPlan(@RequestParam(name = "recalculate", defaultValue = "false") Boolean recalculate,
+			@RequestParam(name = "startTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime) {
+		if (startTime != null || recalculate) {
 			// Recalculate plan based on startTime
-			response = planner.findPlan(store, startTime);
+			planner.findPlan(store, startTime != null ? startTime : LocalDateTime.now());
 		}
-		return response;
+		Schedule schedule = planner.getSchedule();
+		if (!planner.isPlanFound()) {
+			throw new ResourceNotFoundException(String.format(
+					"Not enough consumers to schedule tasks. Current start time is: %s", schedule.getStartTime()));
+		}
+		return schedule;
 	}
 
 	@RequestMapping(path = "/reset", method = RequestMethod.DELETE)

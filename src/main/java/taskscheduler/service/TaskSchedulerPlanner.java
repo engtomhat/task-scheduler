@@ -35,7 +35,7 @@ public class TaskSchedulerPlanner implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		TaskSchedulerStore store = (TaskSchedulerStore) o;
-		setSchedule(findPlan(store, LocalDateTime.now()));
+		findPlan(store, LocalDateTime.now());
 	}
 
 	/**
@@ -43,7 +43,7 @@ public class TaskSchedulerPlanner implements Observer {
 	 * 
 	 * @param store Task scheduler store carrying the queues of tasks and consumers
 	 */
-	public Schedule findPlan(TaskSchedulerStore store, LocalDateTime startTime) {
+	public void findPlan(TaskSchedulerStore store, LocalDateTime startTime) {
 		ScheduleBuilder scheduleBuilder = new Schedule.ScheduleBuilder().startsAt(startTime);
 		store.clearConsumerTasks();
 		Queue<Consumer> consumers = store.getConsumers();
@@ -75,7 +75,7 @@ public class TaskSchedulerPlanner implements Observer {
 				scheduleBuilder.withConsumers(consumers);
 			}
 		}
-		return scheduleBuilder.build();
+		setSchedule(scheduleBuilder.build());
 	}
 
 }
