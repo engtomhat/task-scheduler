@@ -21,7 +21,7 @@ This should run the application on localhost:8080
 #### 1. Submit Task (POST)
 This endpoints adds a task to the pool of tasks to be scheduled
 
-Example Request
+###### Example Request
 ```javascript
 POST http://localhost:8080/task-scheduler/task
 
@@ -31,7 +31,7 @@ Body:
    "targetDateTime":"{date in format yyyy-MM-dd'T'HH:mm:ss.SSSZ}"
 }
 ```
-Example Response {TASK_BODY}
+###### Example Response {TASK_BODY}
 ```javascript
 {
     "taskId": "{UUID String of ID}",
@@ -39,7 +39,7 @@ Example Response {TASK_BODY}
     "targetDateTime": "{date in format yyyy-MM-dd'T'HH:mm:ss.SSSZ}"
 }
 ```
-Error Response
+###### Error Response
 ```javascript
 - If input was formatted incorrectly
 {
@@ -54,11 +54,11 @@ Error Response
 #### 2. Register Consumer (POST)
 This endpoint adds a consumer to the pool of consumers ready to accept tasks
 
-Example Request
+###### Example Request
 ```javascript
 POST http://localhost:8080/task-scheduler/consumer
 ```
-Example Response {CONSUMER_BODY}
+###### Example Response {CONSUMER_BODY}
 ```javascript
 {
     "consumerId": "{UUID String of ID}",
@@ -69,15 +69,15 @@ Example Response {CONSUMER_BODY}
 #### 3. Get Consumer Tasks (GET)
 This endpoint retrieves the tasks assigned to a consumer
 
-Example Request
+###### Example Request
 ```javascript
 GET http://localhost:8080/task-scheduler/consumer/{CONSUMER_ID}/tasks
 ```
-Example Response (Array of assigned task objects)
+###### Example Response (Array of assigned task objects)
 ```javascript
 [{TASK_BODY},{TASK_BODY}]
 ```
-Error Response
+###### Error Response
 ```javascript
 - If no consumer matches the {CONSUMER_ID} passed
 {
@@ -91,7 +91,7 @@ Error Response
 #### 4. Get Plan (GET)
 Retrieve the schedule of tasks (if any). This endpoint also allows you to recalculate plans based on current time or a different start date. 
 
-Example Request
+###### Example Request
 ```javascript
 GET http://localhost:8080/task-scheduler/plan
 
@@ -103,7 +103,7 @@ Request parameters:
 (optional) recalculate: (true/false) defaults to false
 - If passed as true, it will enforce the scheduler to recalculate a plan based on the startTime. If no startTime is provided, it will recalculate based on current time.
 ```
-Example Response
+###### Example Response
 ```javascript
 {
     "startTime": "{Date/Time of starting the plan}",
@@ -119,7 +119,7 @@ Example Response
     ]
 }
 ```
-Error Response
+###### Error Response
 ```javascript
 - If no plan was found
 {
@@ -143,11 +143,11 @@ Error Response
 #### 5. Get Tasks (GET)
 Retrieve all tasks
 
-Example Request
+###### Example Request
 ```javascript
 GET http://localhost:8080/task-scheduler/tasks
 ```
-Example Response
+###### Example Response
 ```javascript
 [
     {TASK_BODY},
@@ -158,11 +158,11 @@ Example Response
 #### 6. Get Consumers (GET)
 Retrieve all consumers
 
-Example Request
+###### Example Request
 ```javascript
 GET http://localhost:8080/task-scheduler/consumers
 ```
-Example Response
+###### Example Response
 ```javascript
 [
     {CONSUMER_BODY},
@@ -173,11 +173,11 @@ Example Response
 #### 7. Reset Scheduler (DELETE)
 Reset the scheduler. This removes any tasks, consumers, and plans stored.
 
-Example Request
+###### Example Request
 ```javascript
 DELETE http://localhost:8080/task-scheduler/reset
 ```
-Example Response
+###### Example Response
 ```javascript
 200 OK
 ```
