@@ -8,6 +8,9 @@ A Task Scheduler which tries to split tasks among available consumers.
 - A consumer can not run multiple tasks at the same time.
 - A consumer doesn't need take any breaks between assigned tasks.
 - A plan is considered successful only if all tasks can be completed by their respective target date/time.
+- Scheduler eagerly tries to calculate a plan whenever a task or consumer is added.
+It assumes a start time equal to the time of creating the task or consumer.
+- Scheduler accepts a (startTime) parameter which controls when to start the schedule of tasks. If (startTime) is not provided, the time of the request will be used. [Check instruction 4](#4-get-plan-get)
 
 ### Installation
 I used Spring Boot to build the project. The easiest way to build it would be to run the following commands:
