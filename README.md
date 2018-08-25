@@ -116,7 +116,9 @@ Request parameters:
             "consumerId": "{UUID String}",
             "assignedTasks": [{TASK_BODY}]
         }
-    ]
+    ],
+    "totalTime": {Duration in millis that will plan will take},
+    "endTime": "{Date/Time of completing the plan}"
 }
 ```
 ###### Error Response
