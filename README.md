@@ -11,7 +11,7 @@ A Task Scheduler which tries to split tasks among available consumers.
 - Consumers keep an internal variable carrying the time needed by all assigned tasks. At any time, when a consumer is needed, the one with less time elapsed is assumed to be the first to free up.
 - A plan is considered successful only if all tasks can be completed by their respective target date/time.
 - Scheduler eagerly tries to calculate a plan whenever a task or consumer is added.
-It assumes a start time equal to the time of creating the task or consumer.
+It assumes that the plan starts at the time of creating the task or consumer.
 - Scheduler accepts a (startTime) parameter which controls when to start the schedule of tasks. If (startTime) is not provided, the time of the request will be used. [Check instruction 4](#4-get-plan-get)
 
 ### Installation
