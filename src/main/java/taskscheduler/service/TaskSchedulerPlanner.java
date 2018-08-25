@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.PriorityQueue;
 import java.util.Queue;
 
 import taskscheduler.model.Consumer;
@@ -52,19 +53,23 @@ public class TaskSchedulerPlanner implements Observer {
 		store.clearConsumerTasks();
 		Queue<Consumer> consumers = store.getConsumers();
 		if (!consumers.isEmpty()) {
-			Queue<Task> tasks = store.getTasks();
+			Queue<Task> tasks = new PriorityQueue<>(store.getTasks());
 			Consumer nextConsumer = null;
 			LocalDateTime stepStartTime = null;
 			LocalDateTime stepFinishTime = null;
 			LocalDateTime start = startTime;
 			int tasksProcessed = 0;
-			for (Task nextTask : tasks) {
+			int totalTasks = tasks.size();
+			boolean isConsumerAvailable = true;
+			Task nextTask = null;
+			while (isConsumerAvailable && !tasks.isEmpty()) {
+				nextTask = tasks.poll();
 				nextConsumer = consumers.poll();
 				stepStartTime = start.plus(Duration.ofMillis(nextConsumer.getTimeElapsed()));
 				stepFinishTime = stepStartTime.plus(Duration.ofMillis(nextTask.getDurationInMillis()));
 				if (stepFinishTime.isAfter(nextTask.getTargetDateTime())) {
 					consumers.add(nextConsumer);
-					break;
+					isConsumerAvailable = false;
 				} else {
 					nextConsumer.addTask(nextTask);
 					consumers.add(nextConsumer);
@@ -72,7 +77,7 @@ public class TaskSchedulerPlanner implements Observer {
 				}
 			}
 			// If all tasks can be processed, we have a working plan
-			setPlanFound(tasksProcessed > 0 && tasksProcessed == tasks.size());
+			setPlanFound(tasksProcessed > 0 && tasksProcessed == totalTasks);
 			if (!isPlanFound()) {
 				store.clearConsumerTasks();
 			} else {
