@@ -93,5 +93,6 @@ public class TaskSchedulerController {
 	@RequestMapping(path = "/reset", method = RequestMethod.DELETE)
 	public void reset() {
 		store.clear();
+		planner.clear();
 	}
 }

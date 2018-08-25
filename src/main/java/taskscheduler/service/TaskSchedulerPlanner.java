@@ -15,6 +15,10 @@ public class TaskSchedulerPlanner implements Observer {
 
 	private boolean planFound;
 	private Schedule schedule;
+	
+	public TaskSchedulerPlanner() {
+		clear();
+	}
 
 	public boolean isPlanFound() {
 		return planFound;
@@ -76,6 +80,11 @@ public class TaskSchedulerPlanner implements Observer {
 			}
 		}
 		setSchedule(scheduleBuilder.build());
+	}
+	
+	public void clear() {
+		setPlanFound(false);
+		setSchedule(new Schedule.ScheduleBuilder().build());
 	}
 
 }
