@@ -2,11 +2,13 @@
 A Task Scheduler which tries to split tasks among available consumers.
 
 ### How it works
-- Scheduler carries a queue of tasks and consumers
 - A task would have a duration and a target date/time that must be met.
 - A consumer can run any number of tasks in a sequential manner.
 - A consumer can not run multiple tasks at the same time.
 - A consumer doesn't need take any breaks between assigned tasks.
+- Scheduler carries a queue of tasks and consumers in storage. (Priority queues)
+- Tasks are prioritized based on which has an earlier target. In the case of tasks having the same target, the task with the longer duration runs first.
+- Consumers keep an internal variable carrying the time needed by all assigned tasks. At any time, when a consumer is needed, the one with less time elapsed is assumed to be the first to free up.
 - A plan is considered successful only if all tasks can be completed by their respective target date/time.
 - Scheduler eagerly tries to calculate a plan whenever a task or consumer is added.
 It assumes a start time equal to the time of creating the task or consumer.
