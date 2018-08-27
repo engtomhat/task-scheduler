@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>com.oath</groupId>
 	<artifactId>task-scheduler</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>Oath Task Scheduler</name>
 	<description>	</description>
 
